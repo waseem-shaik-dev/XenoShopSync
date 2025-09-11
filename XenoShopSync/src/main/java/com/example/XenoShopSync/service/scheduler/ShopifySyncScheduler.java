@@ -22,7 +22,7 @@ public class ShopifySyncScheduler {
         this.productService = productService;
     }
 
-    @Scheduled(cron = "0 */30 * * * *")
+    //@Scheduled(cron = "0 */30 * * * *")
     public void syncAllTenants() {
         customerService.scheduledSync();
         orderService.scheduledSync();

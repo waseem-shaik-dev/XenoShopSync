@@ -1,9 +1,11 @@
 package com.example.XenoShopSync.service;
 
 
+import com.example.XenoShopSync.dto.ProductDto;
 import com.example.XenoShopSync.entity.Product;
 import com.example.XenoShopSync.entity.ProductVariant;
 import com.example.XenoShopSync.entity.Tenant;
+import com.example.XenoShopSync.mapper.ProductMapper;
 import com.example.XenoShopSync.repository.ProductRepository;
 import com.example.XenoShopSync.repository.TenantRepository;
 import com.example.XenoShopSync.utility.ShopifyClient;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -127,4 +130,56 @@ public class ProductService {
             return 0;
         }
     }
+
+
+
+
+
+    // ✅ Get all products for a tenant
+    public List<ProductDto> getAllProducts(String tenantId) {
+        return productRepository.findByTenantId(tenantId).stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Get product by database ID
+    public Optional<ProductDto> getProductById(Long id) {
+        return productRepository.findById(id)
+                .map(ProductMapper::toDto);
+    }
+
+    // ✅ Get product by Shopify ID
+    public Optional<ProductDto> getProductByShopifyId(String tenantId, Long shopifyId) {
+        return productRepository.findByTenantIdAndShopifyId(tenantId, shopifyId)
+                .map(ProductMapper::toDto);
+    }
+
+    // ✅ Get products by vendor
+    public List<ProductDto> getProductsByVendor(String tenantId, String vendor) {
+        return productRepository.findByTenantIdAndVendor(tenantId, vendor).stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Get products by product type
+    public List<ProductDto> getProductsByType(String tenantId, String productType) {
+        return productRepository.findByTenantIdAndProductType(tenantId, productType).stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Get products by tag (contains search)
+    public List<ProductDto> getProductsByTag(String tenantId, String tag) {
+        return productRepository.findByTenantIdAndTagsContaining(tenantId, tag).stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Count products for a tenant
+    public Long countProductsByTenant(String tenantId) {
+        return productRepository.countByTenantId(tenantId);
+    }
+
+   
+
 }

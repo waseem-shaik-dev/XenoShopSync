@@ -1,8 +1,10 @@
 package com.example.XenoShopSync.service;
 
+import com.example.XenoShopSync.dto.OrderDto;
 import com.example.XenoShopSync.entity.Order;
 import com.example.XenoShopSync.entity.OrderLineItem;
 import com.example.XenoShopSync.entity.Tenant;
+import com.example.XenoShopSync.mapper.OrderMapper;
 import com.example.XenoShopSync.repository.OrderRepository;
 import com.example.XenoShopSync.repository.TenantRepository;
 import com.example.XenoShopSync.utility.ShopifyClient;
@@ -12,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -116,4 +120,58 @@ public class OrderService {
             return 0;
         }
     }
+
+
+
+
+    // ✅ Get all orders for a tenant
+    public List<OrderDto> getAllOrders(String tenantId) {
+        return orderRepository.findByTenantId(tenantId).stream()
+                .map(OrderMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Get order by database ID
+    public Optional<OrderDto> getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .map(OrderMapper::toDto);
+    }
+
+    // ✅ Get order by Shopify order ID for a tenant
+    public Optional<OrderDto> getOrderByShopifyId(String tenantId, Long shopifyOrderId) {
+        return orderRepository.findByTenantIdAndShopifyOrderId(tenantId, shopifyOrderId)
+                .map(OrderMapper::toDto);
+    }
+
+    // ✅ Get orders by customer email
+    public List<OrderDto> getOrdersByEmail(String tenantId, String email) {
+        return orderRepository.findByTenantIdAndEmail(tenantId, email).stream()
+                .map(OrderMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Get orders created after a certain date
+    public List<OrderDto> getOrdersCreatedAfter(String tenantId, String isoDateTime) {
+
+        OffsetDateTime dateTime = OffsetDateTime.parse(isoDateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        return orderRepository.findByTenantIdAndCreatedAtAfter(tenantId, dateTime).stream()
+                .map(OrderMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Get orders updated after a certain date
+    public List<OrderDto> getOrdersUpdatedAfter(String tenantId, String isoDateTime) {
+        OffsetDateTime dateTime = OffsetDateTime.parse(isoDateTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        return orderRepository.findByTenantIdAndUpdatedAtAfter(tenantId, dateTime).stream()
+                .map(OrderMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Count orders for a tenant
+    public long countOrdersByTenant(String tenantId) {
+        return orderRepository.countByTenantId(tenantId);
+    }
+
+
+
 }
