@@ -6,7 +6,8 @@ import lombok.*;
 @Entity
 @Table(name = "order_line_items",
         indexes = {
-                @Index(name = "idx_lineitem_tenant", columnList = "tenantId")
+                @Index(name = "idx_lineitem_tenant", columnList = "tenantId"),
+                @Index(name = "idx_lineitem_shopify", columnList = "shopifyLineItemId")
         })
 @Getter
 @Setter
@@ -19,16 +20,28 @@ public class OrderLineItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long shopifyLineItemId;
-    private Long shopifyProductId;
-    private Long shopifyVariantId;
-    private String title;
-    private Integer quantity;
-    private Double price;
-    private String sku;
+    @Column(nullable = false)
     private String tenantId;
 
+    // 🔹 Shopify identifiers
+    private Long shopifyLineItemId;
+    private String adminGraphqlApiId;
+
+    // 🔹 Product info
+    private String title;
+    private Long productId;
+    private Long variantId;
+    private String vendor;
+
+    // 🔹 Pricing & qty
+    private Double price;
+    private Integer quantity;
+    private Boolean giftCard;
+    private Boolean requiresShipping;
+    private Boolean taxable;
+
+    // 🔹 Relationships
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 }

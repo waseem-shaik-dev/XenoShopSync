@@ -2,12 +2,19 @@ package com.example.XenoShopSync.dto;
 
 public record OrderLineItemDto(
         Long id,
+        String tenantId,
+
         Long shopifyLineItemId,
-        Long shopifyProductId,
-        Long shopifyVariantId,
+        String adminGraphqlApiId,
+
         String title,
-        Integer quantity,
+        Long productId,
+        Long variantId,
+        String vendor,
+
         Double price,
-        String sku,
-        String tenantId
+        Integer quantity,
+        Boolean giftCard,
+        Boolean requiresShipping,
+        Boolean taxable
 ) {}
