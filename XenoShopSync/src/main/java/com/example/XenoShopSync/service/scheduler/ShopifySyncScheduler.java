@@ -4,7 +4,6 @@ package com.example.XenoShopSync.service.scheduler;
 import com.example.XenoShopSync.service.CustomerService;
 import com.example.XenoShopSync.service.OrderService;
 import com.example.XenoShopSync.service.ProductService;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component

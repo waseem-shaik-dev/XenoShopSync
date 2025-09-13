@@ -14,30 +14,20 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-//    @Value("${spring.mail.username}")
-//    private String fromEmail;
+    @Value("${spring.mail.from}")
+    private String from;
 
     // Common send method
     private void sendHtmlMail(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setFrom("w.shaik28835@gmail.com");
+        helper.setFrom(from);
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true); // true = enable HTML
 
         mailSender.send(message);
-    }
-
-    // Welcome Email
-    public void sendWelcomeEmail(String to, String name) throws MessagingException {
-        String subject = "🎉 Welcome to SalaryGen!";
-        String body = "<h2>Hi " + name + ",</h2>" +
-                "<p>Welcome to <b>SalaryGen</b>! 🎊</p>" +
-                "<p>We’re excited to have you onboard. Now you can manage and track salaries with ease.</p>" +
-                "<br><p>Cheers,<br>Team SalaryGen</p>";
-        sendHtmlMail(to, subject, body);
     }
 
     // OTP Email

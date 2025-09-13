@@ -21,6 +21,8 @@ spring:
           auth: true
           starttls:
             enable: true
+    from:
+      w.shaik28835@gmail.com
 
   jpa:
     hibernate:
@@ -33,14 +35,15 @@ spring:
 
 app:
   jwt:
-    # Use env var JWT_SECRET in production (must be at least 256-bit for HS256).
+
     secret: dev-super-secret-key-1234567890-abcdefghijklmnopqrstuvwxyzletsgowithyourchicken
     issuer: waseem
-    # Access token lifetime – short since we have no refresh flow
-    access-minutes: 60
+    # Access token lifetime
+    access-minutes: 1440
 
   cors:
     allowed-origins: http://localhost:5173
     allowed-methods: GET,POST,PUT,DELETE,OPTIONS
     allowed-headers: Authorization,Content-Type
     allow-credentials: true
+

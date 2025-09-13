@@ -1,21 +1,17 @@
 package com.example.XenoShopSync.service;
 
-import com.example.XenoShopSync.dto.CustomerDto;
+
 import com.example.XenoShopSync.entity.Address;
 import com.example.XenoShopSync.entity.Customer;
 import com.example.XenoShopSync.entity.Tenant;
-import com.example.XenoShopSync.mapper.CustomerMapper;
 import com.example.XenoShopSync.repository.CustomerRepository;
 import com.example.XenoShopSync.repository.TenantRepository;
-
 import com.example.XenoShopSync.utility.ShopifyClient;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
@@ -128,39 +124,4 @@ public class CustomerService {
         }
     }
 
-
-
-    // ✅ Get all customers for a tenant
-    public List<CustomerDto> getAllCustomers(String tenantId) {
-        return customerRepository.findByTenantId(tenantId).stream()
-                .map(CustomerMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    // ✅ Get customer by database ID
-    public Optional<CustomerDto> getCustomerById(Long id) {
-        return customerRepository.findById(id)
-                .map(CustomerMapper::toDto);
-    }
-
-    // ✅ Get customer by Shopify ID for a tenant
-    public Optional<CustomerDto> getCustomerByShopifyId(String tenantId, Long shopifyId) {
-        return customerRepository.findByTenantIdAndShopifyId(tenantId, shopifyId)
-                .map(CustomerMapper::toDto);
-    }
-
-    // ✅ Get customers by email for a tenant
-    public List<CustomerDto> getCustomersByEmail(String tenantId, String email) {
-        return customerRepository.findByTenantIdAndEmail(tenantId, email).stream()
-                .map(CustomerMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    // ✅ Get customers by tag for a tenant
-    public List<CustomerDto> getCustomersByTag(String tenantId, String tag) {
-        return customerRepository.findByTenantIdAndTagsContaining(tenantId, tag).stream()
-                .map(CustomerMapper::toDto)
-                .collect(Collectors.toList());
-
-    }
 }

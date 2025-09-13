@@ -1,18 +1,12 @@
 package com.example.XenoShopSync.service;
 
-import com.example.XenoShopSync.dto.OrderDto;
 import com.example.XenoShopSync.entity.Address;
 import com.example.XenoShopSync.entity.Order;
 import com.example.XenoShopSync.entity.OrderLineItem;
 import com.example.XenoShopSync.entity.Tenant;
-import com.example.XenoShopSync.mapper.OrderMapper;
 import com.example.XenoShopSync.repository.OrderRepository;
 import com.example.XenoShopSync.repository.TenantRepository;
 import com.example.XenoShopSync.utility.ShopifyClient;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -210,90 +204,6 @@ public class OrderService {
                 .build();
     }
 
-
-
-
-
-    // 1. Total orders for a tenant
-    public long getTotalOrders(String tenantId) {
-        return orderRepository.countByTenantId(tenantId);
-    }
-
-    // 2. Total revenue for a tenant
-    public double getTotalRevenue(String tenantId) {
-        return orderRepository.sumTotalPriceByTenantId(tenantId).orElse(0.0);
-    }
-
-    // 3. Orders within a date range
-    public List<Order> getOrdersByDateRange(String tenantId, OffsetDateTime start, OffsetDateTime end) {
-        return orderRepository.findByTenantIdAndCreatedAtBetween(tenantId, start, end);
-    }
-
-    // 4. Daily/Monthly order counts (for charts/trends)
-    public List<Object[]> getOrdersGroupedByDate(String tenantId) {
-        return orderRepository.countOrdersGroupedByDate(tenantId);
-    }
-
-    // 5. Top 5 customers by total spend
-    public List<Object[]> getTopCustomersBySpend(String tenantId, int limit) {
-        return orderRepository.findTopCustomersBySpend(tenantId, limit);
-    }
-
-    // 6. Orders by financial status (paid, pending, refunded, etc.)
-    public Map<String, Long> getOrdersByFinancialStatus(String tenantId) {
-        return orderRepository.countOrdersByFinancialStatus(tenantId);
-    }
-
-    // 7. Orders by fulfillment status (fulfilled, partially fulfilled, unfulfilled)
-    public Map<String, Long> getOrdersByFulfillmentStatus(String tenantId) {
-        return orderRepository.countOrdersByFulfillmentStatus(tenantId);
-    }
-
-    // 8. Average order value
-    public double getAverageOrderValue(String tenantId) {
-        Double totalRevenue = orderRepository.sumTotalPriceByTenantId(tenantId).orElse(0.0);
-        Long totalOrders = orderRepository.countByTenantId(tenantId);
-        return totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
-    }
-
-
-    // 9. Recent orders (latest 10 orders)
-    public List<Order> getRecentOrders(String tenantId) {
-        return orderRepository.findTop10ByTenantIdOrderByCreatedAtDesc(tenantId);
-    }
-
-    // 10. Revenue trend (sum per day for a range)
-    public List<Object[]> getRevenueTrend(String tenantId, OffsetDateTime start, OffsetDateTime end) {
-        return orderRepository.sumRevenueGroupedByDate(tenantId, start, end);
-    }
-
-
-
-    // Get all orders for a tenant (⚠️ careful if there are many orders, prefer pagination)
-    public List<Order> getAllOrders(String tenantId) {
-        return orderRepository.findByTenantId(tenantId);
-    }
-
-    // Get paginated orders for a tenant
-    public Page<Order> getOrdersPaged(String tenantId, Pageable pageable) {
-        return orderRepository.findByTenantId(tenantId, pageable);
-    }
-
-    // Get a single order by internal DB ID
-    public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
-    }
-
-    // Get a single order by Shopify Order ID
-    public Optional<Order> getOrderByShopifyId(String tenantId, Long shopifyOrderId) {
-        return orderRepository.findByTenantIdAndShopifyOrderId(tenantId, shopifyOrderId);
-    }
-
-    // Get recent N orders (e.g., last 5)
-    public List<Order> getRecentOrders(String tenantId, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return orderRepository.findTopNByTenantIdOrderByCreatedAtDesc(tenantId, pageable);
-    }
 
 
 

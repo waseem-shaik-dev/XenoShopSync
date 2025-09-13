@@ -1,17 +1,18 @@
 package com.example.XenoShopSync.service;
 
+import com.example.XenoShopSync.auth.SecurityUtil;
+import com.example.XenoShopSync.auth.UserPrincipal;
 import com.example.XenoShopSync.dto.DashboardResponse;
 import com.example.XenoShopSync.dto.TopCustomerDto;
 import com.example.XenoShopSync.dto.TopProductDto;
-import com.example.XenoShopSync.entity.Customer;
-import com.example.XenoShopSync.entity.Order;
-import com.example.XenoShopSync.entity.OrderLineItem;
-import com.example.XenoShopSync.entity.Product;
+import com.example.XenoShopSync.entity.*;
 import com.example.XenoShopSync.repository.CustomerRepository;
 import com.example.XenoShopSync.repository.OrderRepository;
 import com.example.XenoShopSync.repository.ProductRepository;
+import com.example.XenoShopSync.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -22,13 +23,24 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DashboardService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
+    private final TenantRepository tenantRepository;
 
     public DashboardResponse getDashboard(String tenantId, LocalDate from, LocalDate to) {
+
+       UserPrincipal userPrincipal = SecurityUtil.getCurrentUser();
+
+       tenantId = tenantRepository.findById(userPrincipal.getAppUser().getId()).map(Tenant::getTenantId).orElse(null);
+
+
+       if(tenantId==null){
+           throw  new RuntimeException("user is not authenticated!");
+       }
 
         if (to == null) {
             to = LocalDate.now();  // default = today
