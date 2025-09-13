@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/tenant")
 @RequiredArgsConstructor
 public class DashboardController {
 
@@ -19,6 +19,7 @@ public class DashboardController {
      * Example: /api/admin/{tenantId}/dashboard?from=2025-08-01&to=2025-08-31
      * If from/to not provided defaults to last 30 days (including today).
      */
+
     @GetMapping("/{tenantId}/dashboard")
     public DashboardResponse getDashboard(
             @PathVariable String tenantId,

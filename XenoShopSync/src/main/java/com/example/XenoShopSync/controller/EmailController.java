@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/staff/auth")
+@RequestMapping("/api/tenant")
 @RequiredArgsConstructor
 public class EmailController {
 
@@ -31,6 +31,8 @@ public class EmailController {
         passwordResetService.requestPasswordReset(email);
         return "OTP sent ";
     }
+
+
 
     // 2. Reset password using OTP with DTO
     @PostMapping("/reset-password")

@@ -22,7 +22,7 @@ public class Tenant {
     @Column(nullable = false, unique = true)
     private String tenantId;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String shopifyBaseUrl;
 
     @Column(nullable = false)

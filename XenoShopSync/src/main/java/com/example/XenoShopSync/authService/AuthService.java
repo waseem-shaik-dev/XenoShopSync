@@ -18,15 +18,18 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +61,25 @@ public class AuthService {
         }
 
 
+        // 1️⃣ Check tenantId uniqueness
+        boolean tenantExists = tenantRepository.findByTenantId(dto.tenant().tenantId()).isPresent();
+        if (tenantExists) {
+            throw new RuntimeException("Tenant ID already exists. Please choose a different tenant ID.");
+        }
+
+        boolean baseUrlExists = tenantRepository.existsByShopifyBaseUrl(dto.tenant().shopifyBaseUrl());
+        if(baseUrlExists){
+            throw new RuntimeException("Tenant with base url:"+dto.tenant().shopifyBaseUrl()+" already exists. Please choose a different Shopify Base URL.");
+        }
+
+        // 2️⃣ Validate access token
+        boolean tokenValid = validateShopifyAccessToken(dto.tenant().shopifyBaseUrl(), dto.tenant().accessToken());
+        if (!tokenValid) {
+            throw new RuntimeException("Access token OR  Shopify store URL is invalid ");
+        }
+
+
+
 
         User user = User.builder()
                 .email(dto.email())
@@ -83,6 +105,27 @@ public class AuthService {
         sendOtp(user);
 
          return "Registration started. OTP sent to your email.";
+    }
+
+
+    public boolean validateShopifyAccessToken(String shopifyBaseUrl, String accessToken) {
+        try {
+            WebClient client = WebClient.builder()
+                    .baseUrl(shopifyBaseUrl)
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .defaultHeader("X-Shopify-Access-Token", accessToken)
+                    .build();
+
+            String response = client.get()
+                    .uri("/shop.json")
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block(); // blocking for simplicity
+
+            return response != null && !response.isEmpty();
+        } catch (Exception e) {
+            return false; // token invalid or base URL incorrect
+        }
     }
 
 
@@ -117,6 +160,7 @@ public class AuthService {
     }
 
 
+
     private void sendOtp(User user) throws MessagingException {
         String otp = OtpUtil.generateOtp();
         LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
@@ -129,7 +173,7 @@ public class AuthService {
 
         tokenRepository.save(token);
 
-        emailService.sendOtpEmail(user.getEmail(), otp);
+        emailService.sendRegistrationOtpEmail(user.getEmail(), otp);
     }
 
 
