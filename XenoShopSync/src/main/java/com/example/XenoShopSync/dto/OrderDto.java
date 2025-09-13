@@ -23,6 +23,7 @@ public record OrderDto(
         String email,
         String phone,
         String customerLocale,
+        Long shopifyCustomerId,
 
         // Monetary fields
         String currency,

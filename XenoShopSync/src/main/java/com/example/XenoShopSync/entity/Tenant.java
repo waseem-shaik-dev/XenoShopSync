@@ -29,4 +29,9 @@ public class Tenant {
     private String accessToken;
 
     private String shopName;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id") // FK = PK, points to users.id
+    private User user;
 }

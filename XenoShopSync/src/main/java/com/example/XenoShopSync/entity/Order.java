@@ -44,6 +44,7 @@ public class Order {
     private String email;
     private String phone;
     private String customerLocale;
+    private Long shopifyCustomerId;
 
     // 🔹 Monetary fields
     private String currency;

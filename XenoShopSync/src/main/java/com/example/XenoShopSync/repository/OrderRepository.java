@@ -32,7 +32,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Double> sumTotalPriceByTenantId(@Param("tenantId") String tenantId);
 
 
-    List<Order> findByTenantIdAndCreatedAtBetween(String tenantId, OffsetDateTime start, OffsetDateTime end);
+    List<Order> findByTenantIdAndCreatedAtBetween(String tenantId, OffsetDateTime from, OffsetDateTime to);
 
     @Query("SELECT DATE(o.createdAt), COUNT(o) FROM Order o WHERE o.tenantId = :tenantId GROUP BY DATE(o.createdAt) ORDER BY DATE(o.createdAt)")
     List<Object[]> countOrdersGroupedByDate(@Param("tenantId") String tenantId);

@@ -97,6 +97,9 @@ public class OrderService {
         order.setName((String) o.get("name"));
         order.setConfirmationNumber((String) o.get("confirmation_number"));
 
+        //customerId
+        order.setShopifyCustomerId(extractCustomerId((Map<String, Object>) o.get("customer")));
+
         // 🔹 Addresses
         order.setShippingAddress(extractAddress((Map<String, Object>) o.get("shipping_address"), tenantId));
         order.setBillingAddress(extractAddress((Map<String, Object>) o.get("billing_address"), tenantId));
@@ -178,6 +181,11 @@ public class OrderService {
             }
         } catch (Exception ignored) {}
         return null;
+    }
+
+    private Long extractCustomerId(Map<String,Object> customerMap){
+        if (customerMap == null) return null;
+        return toLong(customerMap.get("id"));
     }
 
     private Address extractAddress(Map<String, Object> addrMap, String tenantId) {

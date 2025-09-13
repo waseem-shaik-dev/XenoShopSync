@@ -34,6 +34,7 @@ public class OrderMapper {
                 order.getEmail(),
                 order.getPhone(),
                 order.getCustomerLocale(),
+                order.getShopifyCustomerId(),
 
                 order.getCurrency(),
                 order.getPresentmentCurrency(),
